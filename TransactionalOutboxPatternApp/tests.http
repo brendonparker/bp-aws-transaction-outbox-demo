@@ -1,0 +1,8 @@
+###
+POST {{host}}/order
+
+### 
+GET {{host}}/order/1
+
+###
+POST {{host}}/order/1/submit
