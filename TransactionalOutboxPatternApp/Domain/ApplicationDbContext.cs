@@ -23,8 +23,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbConte
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.ToTable("order");
+            entity.ToTable("orders");
             entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).ValueGeneratedOnAdd();
 
             entity.Property(e => e.Status)
                 .IsRequired();

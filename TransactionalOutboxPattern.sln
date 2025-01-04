@@ -1,14 +1,9 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionalOutboxPatternApp", "TransactionalOutboxPatternApp\TransactionalOutboxPatternApp.csproj", "{958ABDFA-CBEA-4275-BEDE-101834F803E1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1209A67B-DA4D-4371-A903-315203EB5845}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionalOutboxPatternApp", "TransactionalOutboxPatternApp\TransactionalOutboxPatternApp.csproj", "{0B93DFB8-A0BA-4217-BF5A-591C7D28721D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,9 +14,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{958ABDFA-CBEA-4275-BEDE-101834F803E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{958ABDFA-CBEA-4275-BEDE-101834F803E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{958ABDFA-CBEA-4275-BEDE-101834F803E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{958ABDFA-CBEA-4275-BEDE-101834F803E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B93DFB8-A0BA-4217-BF5A-591C7D28721D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B93DFB8-A0BA-4217-BF5A-591C7D28721D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B93DFB8-A0BA-4217-BF5A-591C7D28721D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B93DFB8-A0BA-4217-BF5A-591C7D28721D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
