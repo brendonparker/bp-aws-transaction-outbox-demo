@@ -1,4 +1,4 @@
-namespace TransactionalOutboxPatternApp.Domain;
+namespace TransactionalOutboxPatternApp.Infrastructure;
 
 public class TransactionOutbox
 {
