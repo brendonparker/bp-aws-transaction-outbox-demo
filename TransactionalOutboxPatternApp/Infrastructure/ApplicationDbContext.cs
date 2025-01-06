@@ -8,6 +8,7 @@ namespace TransactionalOutboxPatternApp.Infrastructure;
 
 public class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> dbContextOptions,
+    ILogger<ApplicationDbContext> log,
     IMessageBus messageBus,
     IOptions<DatabaseConfig> dbConfigOptions) : DbContext(dbContextOptions)
 {
@@ -57,12 +58,16 @@ public class ApplicationDbContext(
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
-        var aggregateRoots = ChangeTracker.Entries<AggregateRoot>();
-        var events = aggregateRoots.SelectMany(x => x.Entity.GetIntegrationEvents());
+        var integrationEvents = ChangeTracker
+            .Entries<AggregateRoot>()
+            .SelectMany(x => x.Entity.GetIntegrationEvents())
+            .ToArray();
+
+        log.LogInformation("Integration Events: {Count}", integrationEvents.Length);
         var result = await base.SaveChangesAsync(cancellationToken);
-        foreach (var evnt in events)
+        foreach (var integrationEvent in integrationEvents)
         {
-            await messageBus.PublishAsync("demo", evnt, cancellationToken);
+            await messageBus.PublishAsync("demo", integrationEvent, cancellationToken);
         }
 
         return result;
