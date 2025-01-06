@@ -1,8 +1,10 @@
+using Amazon.SQS;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TransactionalOutboxPatternApp;
 using TransactionalOutboxPatternApp.Domain;
 using TransactionalOutboxPatternApp.Infrastructure;
+using TransactionalOutboxPatternApp.Infrastructure.MessageBus;
 using OrderOrNotFound =
     System.Threading.Tasks.Task<Microsoft.AspNetCore.Http.HttpResults.Results<
         Microsoft.AspNetCore.Http.HttpResults.Ok<TransactionalOutboxPatternApp.Domain.Order>,
@@ -11,16 +13,23 @@ using OrderOrNotFound =
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddSystemsManager(source => {
-    source.Path = "/aws/reference/secretsmanager/bp-db-secret";
-    source.Prefix = "bp-db-secret";
-});
-foreach (var kvp in builder.Configuration.AsEnumerable())
+const string secretName = "bp-db-secret";
+
+builder.Configuration.AddSystemsManager(source =>
 {
-    Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-}
-builder.Services.Configure<DatabaseConfig>(builder.Configuration.GetSection("bp-db-secret"));
+    source.Path = $"/aws/reference/secretsmanager/{secretName}";
+    source.Prefix = secretName;
+});
+
+builder.Services.Configure<DatabaseConfig>(builder.Configuration.GetSection(secretName));
 builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddMessageBus(messageBus =>
+{
+    messageBus
+        .SetDefaultAccountId(Environment.GetEnvironmentVariable("AWS_ACCOUNT_ID") ?? "")
+        .SetDefaultRegion(Environment.GetEnvironmentVariable("AWS REGION") ?? "")
+        .MapTypeToQueue<OrderStatusChanged>("bp-tx-op-sqs.fifo");
+});
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 var app = builder.Build();

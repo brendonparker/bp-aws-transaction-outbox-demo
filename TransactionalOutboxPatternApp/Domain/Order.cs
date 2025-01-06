@@ -9,7 +9,7 @@ public class Order : AggregateRoot
             Id = 0,
             Status = OrderStatus.Created
         };
-        order.AddIntegrationEvent(new OrderStatusChangedIntegrationEvent(order));
+        order.AddIntegrationEvent(new OrderStatusChanged(order));
         return order;
     }
 
@@ -20,6 +20,6 @@ public class Order : AggregateRoot
     {
         if (Status != OrderStatus.Created) throw new Exception();
         Status = OrderStatus.Submitted;
-        AddIntegrationEvent(new OrderStatusChangedIntegrationEvent(this));
+        AddIntegrationEvent(new OrderStatusChanged(this));
     }
 }

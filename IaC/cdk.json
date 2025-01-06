@@ -3,7 +3,7 @@
   "watch": {
     "include": [
       "**",
-      "../publish/api"
+      "../publish/api/TransactionalOutboxPatternApp"
     ],
     "exclude": [
       "README.md",

@@ -55,10 +55,14 @@ export class TransactionOutboxStack extends cdk.Stack {
       handler: "TransactionalOutboxPatternApp",
       runtime: lambda.Runtime.DOTNET_8,
       architecture: lambda.Architecture.ARM_64,
+      timeout: cdk.Duration.seconds(15),
       memorySize: 512,
       role,
       vpc,
       securityGroups: [sg],
+      environment: {
+        AWS_ACCOUNT_ID: this.account,
+      },
     });
 
     const fnUrl = lambdaFn.addFunctionUrl({

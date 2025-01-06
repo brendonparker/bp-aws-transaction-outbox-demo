@@ -2,11 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using TransactionalOutboxPatternApp.Domain;
+using TransactionalOutboxPatternApp.Infrastructure.MessageBus;
 
 namespace TransactionalOutboxPatternApp.Infrastructure;
 
 public class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> dbContextOptions,
+    IMessageBus messageBus,
     IOptions<DatabaseConfig> dbConfigOptions) : DbContext(dbContextOptions)
 {
     public DbSet<TransactionOutbox> TransactionOutbox => Set<TransactionOutbox>();
@@ -51,5 +53,18 @@ public class ApplicationDbContext(
             entity.Property(e => e.Status)
                 .IsRequired();
         });
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    {
+        var aggregateRoots = ChangeTracker.Entries<AggregateRoot>();
+        var events = aggregateRoots.SelectMany(x => x.Entity.GetIntegrationEvents());
+        var result = await base.SaveChangesAsync(cancellationToken);
+        foreach (var evnt in events)
+        {
+            await messageBus.PublishAsync("demo", evnt, cancellationToken);
+        }
+
+        return result;
     }
 }
