@@ -3,11 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using TransactionalOutboxPatternApp.Domain;
+using TransactionalOutboxPatternApp.Infrastructure.MessageBus;
 
 namespace TransactionalOutboxPatternApp.Infrastructure;
 
 public class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> dbContextOptions,
+    ILogger<ApplicationDbContext> log,
+    IMessageBus messageBus,
     IOptions<DatabaseConfig> dbConfigOptions) : DbContext(dbContextOptions)
 {
     public DbSet<TransactionOutbox> TransactionOutbox => Set<TransactionOutbox>();
@@ -86,6 +89,15 @@ public class ApplicationDbContext(
         {
             TransactionOutbox.AddRange(transactionOutboxRecords);
             result += await base.SaveChangesAsync(cancellationToken);
+
+            try
+            {
+                await messageBus.PublishAsync("TransactionOutbox", new PumpOutbox(), cancellationToken);
+            }
+            catch (Exception e)
+            {
+                log.LogWarning(e, "Failed to publish message.");
+            }
         }
 
         await tx.CommitAsync(cancellationToken);

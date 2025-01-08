@@ -3,6 +3,7 @@ import { Construct } from "constructs";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as sqs from "aws-cdk-lib/aws-sqs";
 
 export class TransactionOutboxStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -19,6 +20,20 @@ export class TransactionOutboxStack extends cdk.Stack {
       vpc
     );
 
+    const dlq = new sqs.Queue(this, "DLQ", {
+      queueName: "bp-tx-ob-dl.fifo",
+      contentBasedDeduplication: true,
+    });
+
+    const queue = new sqs.Queue(this, "Queue", {
+      queueName: "bp-tx-ob.fifo",
+      deadLetterQueue: {
+        queue: dlq,
+        maxReceiveCount: 1,
+      },
+      contentBasedDeduplication: true,
+    });
+
     const role = new iam.Role(this, "LambdaRole", {
       roleName: "bp-tx-ob-lambda-role",
       assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
@@ -31,6 +46,9 @@ export class TransactionOutboxStack extends cdk.Stack {
         ),
       ],
     });
+
+    queue.grantSendMessages(role);
+    queue.grantConsumeMessages(role);
 
     role.addToPolicy(
       new iam.PolicyStatement({

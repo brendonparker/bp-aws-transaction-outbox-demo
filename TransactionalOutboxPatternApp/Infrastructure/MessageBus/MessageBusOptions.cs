@@ -35,7 +35,7 @@ public class MessageBusOptions
         {
             if (!queueUrl.StartsWith("https"))
             {
-                queueUrl = $"https://sqs.${_region}.amazonaws.com/${_accountId}/{queueUrl}";
+                queueUrl = $"https://sqs.{_region}.amazonaws.com/{_accountId}/{queueUrl}";
             }
 
             return queueUrl;
