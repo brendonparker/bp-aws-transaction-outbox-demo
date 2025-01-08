@@ -1,3 +1,3 @@
 namespace TransactionalOutboxPatternApp.Infrastructure;
 
-public class PumpOutbox;
+public class TransactionOutboxRecordsAdded;

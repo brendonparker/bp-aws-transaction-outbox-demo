@@ -27,7 +27,7 @@ builder.Services.AddMessageBus(messageBus =>
     messageBus
         .SetDefaultAccountId(Environment.GetEnvironmentVariable("AWS_ACCOUNT_ID") ?? "")
         .SetDefaultRegion(Environment.GetEnvironmentVariable("AWS REGION") ?? "")
-        .MapTypeToQueue<PumpOutbox>("bp-tx-ob.fifo")
+        .MapTypeToQueue<TransactionOutboxRecordsAdded>("bp-tx-ob.fifo")
         .MapTypeToQueue<OrderStatusChanged>("bp-tx-ob.fifo");
 });
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);

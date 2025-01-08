@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace TransactionalOutboxPatternApp.Infrastructure;
 
 public class TransactionOutbox
@@ -11,6 +13,10 @@ public class TransactionOutbox
 
     public int AttemptCount { get; set; }
     public bool IsProcessed { get; set; }
+    public string? ErrorMessage { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? ProcessedAt { get; set; }
+
+    public object? ToObject() =>
+        JsonSerializer.Deserialize(JsonContent, Type.GetType(EventType)!);
 }

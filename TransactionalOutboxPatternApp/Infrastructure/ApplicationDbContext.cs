@@ -92,7 +92,7 @@ public class ApplicationDbContext(
 
             try
             {
-                await messageBus.PublishAsync("TransactionOutbox", new PumpOutbox(), cancellationToken);
+                await messageBus.PublishAsync("TransactionOutbox", new TransactionOutboxRecordsAdded(), cancellationToken);
             }
             catch (Exception e)
             {
