@@ -77,7 +77,7 @@ public class ApplicationDbContext(
                     EntityType = entry.Entity.GetType().FullName!,
                     EntityId = entry.Entity.Id,
                     EventType = evnt.GetType().FullName!,
-                    JsonContent = JsonSerializer.Serialize(evnt),
+                    JsonContent = JsonSerializer.Serialize(evnt, evnt.GetType()),
                     CreatedAt = DateTime.UtcNow
                 })
             .ToArray();

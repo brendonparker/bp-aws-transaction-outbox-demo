@@ -77,11 +77,12 @@ app.MapPost("/order/{orderId:long}/submit",
         return TypedResults.Ok(order);
     });
 
-using (var temp = app.Services.CreateScope())
-{
-    var dbContext = temp.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-    dbContext.Database.Migrate();
-}
+// TODO: Uncomment this to run migrations
+// using (var temp = app.Services.CreateScope())
+// {
+//     var dbContext = temp.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//
+//     dbContext.Database.Migrate();
+// }
 
 app.Run();
