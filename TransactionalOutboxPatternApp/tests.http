@@ -1,8 +1,12 @@
 ###
 POST {{host}}/order
 
+###
+GET {{host}}/tx_outbox
+
+
 ### 
-GET {{host}}/order/100
+GET {{host}}/order/1
 
 ###
-POST {{host}}/order/101/submit
+POST {{host}}/order/1/submit

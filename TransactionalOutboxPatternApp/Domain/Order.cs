@@ -1,3 +1,5 @@
+using TransactionalOutboxPatternApp.Infrastructure;
+
 namespace TransactionalOutboxPatternApp.Domain;
 
 public class Order : AggregateRoot
@@ -13,7 +15,6 @@ public class Order : AggregateRoot
         return order;
     }
 
-    public required long Id { get; set; } = 0;
     public required string Status { get; set; }
 
     public void Submit()

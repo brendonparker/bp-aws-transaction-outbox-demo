@@ -1,15 +1,13 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using TransactionalOutboxPatternApp.Domain;
-using TransactionalOutboxPatternApp.Infrastructure.MessageBus;
 
 namespace TransactionalOutboxPatternApp.Infrastructure;
 
 public class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> dbContextOptions,
-    ILogger<ApplicationDbContext> log,
-    IMessageBus messageBus,
     IOptions<DatabaseConfig> dbConfigOptions) : DbContext(dbContextOptions)
 {
     public DbSet<TransactionOutbox> TransactionOutbox => Set<TransactionOutbox>();
@@ -38,10 +36,16 @@ public class ApplicationDbContext(
             entity.ToTable("transaction_outbox");
             entity.HasKey(x => x.Id);
 
-            entity.Property(e => e.IsProcessed)
+            entity.Property(e => e.EntityType)
                 .IsRequired();
-
+            entity.Property(e => e.EntityId)
+                .IsRequired();
+            entity.Property(e => e.EventType)
+                .IsRequired();
             entity.Property(e => e.JsonContent)
+                .HasColumnType("jsonb")
+                .IsRequired();
+            entity.Property(e => e.IsProcessed)
                 .IsRequired();
         });
 
@@ -58,18 +62,33 @@ public class ApplicationDbContext(
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
-        var integrationEvents = ChangeTracker
+        var result = 0;
+        await using var tx = await Database.BeginTransactionAsync(cancellationToken);
+
+        result = await base.SaveChangesAsync(cancellationToken);
+
+        var transactionOutboxRecords = ChangeTracker
             .Entries<AggregateRoot>()
-            .SelectMany(x => x.Entity.GetIntegrationEvents())
+            .SelectMany(
+                entry => entry.Entity.GetIntegrationEvents(),
+                (entry, evnt) => new TransactionOutbox
+                {
+                    Id = 0,
+                    EntityType = entry.Entity.GetType().FullName!,
+                    EntityId = entry.Entity.Id,
+                    EventType = evnt.GetType().FullName!,
+                    JsonContent = JsonSerializer.Serialize(evnt),
+                    CreatedAt = DateTime.UtcNow
+                })
             .ToArray();
 
-        log.LogInformation("Integration Events: {Count}", integrationEvents.Length);
-        var result = await base.SaveChangesAsync(cancellationToken);
-        foreach (var integrationEvent in integrationEvents)
+        if (transactionOutboxRecords.Length != 0)
         {
-            await messageBus.PublishAsync("demo", integrationEvent, cancellationToken);
+            TransactionOutbox.AddRange(transactionOutboxRecords);
+            result += await base.SaveChangesAsync(cancellationToken);
         }
 
+        await tx.CommitAsync(cancellationToken);
         return result;
     }
 }
