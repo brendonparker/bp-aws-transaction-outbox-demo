@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace TransactionalOutboxPatternApp.Infrastructure.MessageBus;
+namespace BP.AWS.Messaging;
 
 public class MessageEnvelope
 {

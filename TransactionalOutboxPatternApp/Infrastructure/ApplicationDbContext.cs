@@ -1,9 +1,9 @@
 using System.Text.Json;
+using BP.AWS.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using TransactionalOutboxPatternApp.Domain;
-using TransactionalOutboxPatternApp.Infrastructure.MessageBus;
 
 namespace TransactionalOutboxPatternApp.Infrastructure;
 

@@ -4,6 +4,7 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as sqs from "aws-cdk-lib/aws-sqs";
+import * as eventsource from "aws-cdk-lib/aws-lambda-event-sources";
 
 export class TransactionOutboxStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -21,7 +22,7 @@ export class TransactionOutboxStack extends cdk.Stack {
     );
 
     const dlq = new sqs.Queue(this, "DLQ", {
-      queueName: "bp-tx-ob-dl.fifo",
+      queueName: "bp-tx-ob-dlq.fifo",
       contentBasedDeduplication: true,
     });
 
@@ -67,13 +68,10 @@ export class TransactionOutboxStack extends cdk.Stack {
       })
     );
 
-    const lambdaFn = new lambda.Function(this, "Api", {
-      functionName: "bp-tx-ob-api-lambda",
+    const lambdaDefaults = {
       code: lambda.Code.fromAsset("../publish/api"),
-      handler: "TransactionalOutboxPatternApp",
       runtime: lambda.Runtime.DOTNET_8,
       architecture: lambda.Architecture.ARM_64,
-      timeout: cdk.Duration.seconds(15),
       memorySize: 512,
       role,
       vpc,
@@ -81,11 +79,31 @@ export class TransactionOutboxStack extends cdk.Stack {
       environment: {
         AWS_ACCOUNT_ID: this.account,
       },
+      timeout: cdk.Duration.seconds(15),
+    };
+
+    const lambdaFn = new lambda.Function(this, "Api", {
+      ...lambdaDefaults,
+      functionName: "bp-tx-ob-api-lambda",
+      handler: "TransactionalOutboxPatternApp",
     });
 
     const fnUrl = lambdaFn.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
     });
+
+    const lambdaQueueProcessor = new lambda.Function(this, "QueueProcessor", {
+      ...lambdaDefaults,
+      functionName: "bp-tx-ob-queue-lambda",
+      handler:
+        "TransactionalOutboxPatternApp::TransactionalOutboxPatternApp.QueueLambda::Handler",
+    });
+
+    lambdaQueueProcessor.addEventSource(
+      new eventsource.SqsEventSource(queue, {
+        batchSize: 1,
+      })
+    );
 
     new cdk.CfnOutput(this, "TxOutboxFnUrl", { value: fnUrl.url });
   }

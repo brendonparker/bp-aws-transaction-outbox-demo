@@ -1,8 +1,7 @@
-using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using TransactionalOutboxPatternApp.Domain;
 
-namespace TransactionalOutboxPatternApp.Infrastructure.MessageBus;
+namespace BP.AWS.Messaging;
 
 public class MessageBusOptions
 {
@@ -41,27 +40,16 @@ public class MessageBusOptions
     public MessageBusOptions UseHandler<THandler, TMessage>() where THandler : IHandler<TMessage>
     {
         var name = GetName<TMessage>();
-        _handlers.Add(new HandlerConfiguration(name, typeof(HandlerConfiguration), typeof(TMessage)));
+        _handlers.Add(new HandlerConfiguration(name, typeof(THandler), typeof(TMessage)));
         return this;
     }
 
-    public void RegisterHandlers(IServiceCollection services)
+    internal void RegisterHandlers(IServiceCollection services)
     {
         foreach (var handler in _handlers)
         {
-            services.TryAddKeyedTransient(typeof(IHandler<>), handler.Name, handler.HandlerType);
+            services.TryAddKeyedTransient(typeof(IHandler), handler.Name, handler.HandlerType);
         }
-    }
-
-    public object Deserialize(MessageEnvelope envelope)
-    {
-        if (!_queueMapping.TryGetValue(envelope.Type, out var queueMapping))
-        {
-            throw new Exception($"No type mapped for: {envelope.Type}");
-        }
-
-        var result = JsonSerializer.Deserialize(envelope.Payload, queueMapping.Type);
-        return result ?? throw new Exception($"Failed to deserialize type: {queueMapping.Type} {envelope.Payload}");
     }
 
     public string? GetQueueUrl<T>()
@@ -71,29 +59,12 @@ public class MessageBusOptions
             var queueUrl = typeConfig.QueueUrl;
             if (!queueUrl.StartsWith("https"))
             {
-                return $"https://sqs.{_region}.amazonaws.com/{_accountId}/{typeConfig}";
+                return $"https://sqs.{_region}.amazonaws.com/{_accountId}/{queueUrl}";
             }
 
             return queueUrl;
         }
 
         return null;
-    }
-}
-
-public interface IMessageDispatcher
-{
-    Task DispatchAsync(object message);
-}
-
-public class MessageDispatcher(IServiceProvider serviceProvider) : IMessageDispatcher
-{
-    public async Task DispatchAsync(object message)
-    {
-        var key = message.GetType().AssemblyQualifiedName ?? throw new Exception();
-        var handler = serviceProvider.GetRequiredKeyedService(typeof(IHandler<>), key);
-        var method = typeof(IHandler<>).GetMethod(nameof(IHandler<object>.HandleAsync));
-        var result = method!.Invoke(handler, [message, CancellationToken.None]) as Task<bool>;
-        await result!;
     }
 }

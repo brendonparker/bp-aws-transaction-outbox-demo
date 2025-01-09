@@ -1,7 +1,8 @@
 using Amazon.SQS;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace TransactionalOutboxPatternApp.Infrastructure.MessageBus;
+namespace BP.AWS.Messaging;
 
 public static class ServiceCollectionExtensions
 {
@@ -11,10 +12,13 @@ public static class ServiceCollectionExtensions
     {
         services.AddAWSService<IAmazonSQS>();
         services.TryAddSingleton<IMessageBus, MessageBus>();
-        services.TryAddSingleton<IMessageDispatcher, MessageDispatcher>();
-        services.AddOptions<MessageBusOptions>()
-            .Configure(queueConfigBuilder)
-            .PostConfigure(x => x.RegisterHandlers(services));
+        services.TryAddSingleton<IHandlerInvoker, HandlerInvoker>();
+
+        MessageBusOptions opts = new();
+        queueConfigBuilder(opts);
+        opts.RegisterHandlers(services);
+        services.Configure(queueConfigBuilder);
+
         return services;
     }
 }

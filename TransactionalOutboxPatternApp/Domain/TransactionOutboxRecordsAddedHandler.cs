@@ -1,13 +1,9 @@
+using System.Text.Json;
+using BP.AWS.Messaging;
 using Microsoft.EntityFrameworkCore;
 using TransactionalOutboxPatternApp.Infrastructure;
-using TransactionalOutboxPatternApp.Infrastructure.MessageBus;
 
 namespace TransactionalOutboxPatternApp.Domain;
-
-public interface IHandler<in T>
-{
-    Task<bool> HandleAsync(T message, CancellationToken cancellationToken);
-}
 
 public class TransactionOutboxRecordsAddedHandler(
     ILogger<TransactionOutboxRecordsAddedHandler> log,
@@ -15,6 +11,12 @@ public class TransactionOutboxRecordsAddedHandler(
     IMessageBus messageBus) : IHandler<TransactionOutboxRecordsAdded>
 {
     private const int MaxDequeue = 50;
+
+    public async Task<bool> HandleAsync(JsonElement message, CancellationToken cancellationToken)
+    {
+        var obj = message.Deserialize<TransactionOutboxRecordsAdded>();
+        return await HandleAsync(obj!, cancellationToken);
+    }
 
     public async Task<bool> HandleAsync(TransactionOutboxRecordsAdded message, CancellationToken ct = default)
     {
@@ -28,7 +30,7 @@ public class TransactionOutboxRecordsAddedHandler(
         foreach (var record in records)
         {
             log.LogInformation("Processing Message: {MessageId} {EventType}", record.Id, record.EventType);
-            
+
             if (!await IncrementAttemptCount(record, ct))
             {
                 // Someone else attempted this while we were looking at it.

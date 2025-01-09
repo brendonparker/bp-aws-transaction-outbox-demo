@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using TransactionalOutboxPatternApp;
 using TransactionalOutboxPatternApp.Domain;
 using TransactionalOutboxPatternApp.Infrastructure;
-using TransactionalOutboxPatternApp.Infrastructure.MessageBus;
 using OrderOrNotFound =
     System.Threading.Tasks.Task<Microsoft.AspNetCore.Http.HttpResults.Results<
         Microsoft.AspNetCore.Http.HttpResults.Ok<TransactionalOutboxPatternApp.Domain.Order>,
@@ -11,25 +10,7 @@ using OrderOrNotFound =
         Microsoft.AspNetCore.Http.HttpResults.NotFound>>;
 
 var builder = WebApplication.CreateBuilder(args);
-
-const string secretName = "bp-db-secret";
-
-builder.Configuration.AddSystemsManager(source =>
-{
-    source.Path = $"/aws/reference/secretsmanager/{secretName}";
-    source.Prefix = secretName;
-});
-
-builder.Services.Configure<DatabaseConfig>(builder.Configuration.GetSection(secretName));
-builder.Services.AddDbContext<ApplicationDbContext>();
-builder.Services.AddMessageBus(messageBus =>
-{
-    messageBus
-        .SetDefaultAccountId(Environment.GetEnvironmentVariable("AWS_ACCOUNT_ID") ?? "")
-        .SetDefaultRegion(Environment.GetEnvironmentVariable("AWS REGION") ?? "")
-        .MapTypeToQueue<TransactionOutboxRecordsAdded>("bp-tx-ob.fifo")
-        .MapTypeToQueue<OrderStatusChanged>("bp-tx-ob.fifo");
-});
+builder.AddApplication();
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 var app = builder.Build();
