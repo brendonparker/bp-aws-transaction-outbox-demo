@@ -10,7 +10,7 @@ public class MessageEnvelope
     public static MessageEnvelope Create<T>(T content) =>
         new()
         {
-            Type = content!.GetType().AssemblyQualifiedName!,
+            Type = typeof(T).Name,
             Payload = JsonSerializer.SerializeToElement(content)
         };
 

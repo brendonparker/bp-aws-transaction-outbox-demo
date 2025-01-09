@@ -25,8 +25,9 @@ public static class ServiceCollectionExtensions
                 .SetDefaultAccountId(Environment.GetEnvironmentVariable("AWS_ACCOUNT_ID") ?? "")
                 .SetDefaultRegion(Environment.GetEnvironmentVariable("AWS REGION") ?? "")
                 .MapTypeToQueue<TransactionOutboxRecordsAdded>(queueName)
-                .MapTypeToQueue<OrderStatusChanged>(queueName)
-                .UseHandler<TransactionOutboxRecordsAddedHandler, TransactionOutboxRecordsAdded>();
+                .MapTypeToQueue<OrderStatusChanged>(queueName);
         });
+
+        builder.Services.AddHandler<TransactionOutboxRecordsAddedHandler, TransactionOutboxRecordsAdded>();
     }
 }

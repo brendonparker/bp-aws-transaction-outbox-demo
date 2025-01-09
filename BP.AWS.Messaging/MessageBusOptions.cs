@@ -1,6 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
 namespace BP.AWS.Messaging;
 
 public class MessageBusOptions
@@ -27,7 +24,7 @@ public class MessageBusOptions
     }
 
     private string GetName<T>() =>
-        typeof(T).AssemblyQualifiedName ?? string.Empty;
+        typeof(T).Name;
 
     public MessageBusOptions MapTypeToQueue<T>(string queueUrl)
     {
@@ -35,21 +32,6 @@ public class MessageBusOptions
         if (string.IsNullOrWhiteSpace(messageTypeName)) throw new Exception();
         _queueMapping[messageTypeName] = new TypeConfiguration(messageTypeName, queueUrl, typeof(T));
         return this;
-    }
-
-    public MessageBusOptions UseHandler<THandler, TMessage>() where THandler : IHandler<TMessage>
-    {
-        var name = GetName<TMessage>();
-        _handlers.Add(new HandlerConfiguration(name, typeof(THandler), typeof(TMessage)));
-        return this;
-    }
-
-    internal void RegisterHandlers(IServiceCollection services)
-    {
-        foreach (var handler in _handlers)
-        {
-            services.TryAddKeyedTransient(typeof(IHandler), handler.Name, handler.HandlerType);
-        }
     }
 
     public string? GetQueueUrl<T>()
