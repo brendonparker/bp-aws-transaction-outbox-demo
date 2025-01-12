@@ -1,3 +1,0 @@
-namespace TransactionalOutboxPatternApp.Domain;
-
-public interface IIntegrationEvent;

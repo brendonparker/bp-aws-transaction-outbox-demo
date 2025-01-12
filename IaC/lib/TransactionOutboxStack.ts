@@ -85,7 +85,7 @@ export class TransactionOutboxStack extends cdk.Stack {
     const lambdaFn = new lambda.Function(this, "Api", {
       ...lambdaDefaults,
       functionName: "bp-tx-ob-api-lambda",
-      handler: "TransactionalOutboxPatternApp",
+      handler: "TransactionOutboxPatternApp",
     });
 
     const fnUrl = lambdaFn.addFunctionUrl({
@@ -96,7 +96,7 @@ export class TransactionOutboxStack extends cdk.Stack {
       ...lambdaDefaults,
       functionName: "bp-tx-ob-queue-lambda",
       handler:
-        "TransactionalOutboxPatternApp::TransactionalOutboxPatternApp.QueueLambda::Handler",
+        "TransactionOutboxPatternApp::TransactionOutboxPatternApp.QueueLambda::Handler",
     });
 
     lambdaQueueProcessor.addEventSource(

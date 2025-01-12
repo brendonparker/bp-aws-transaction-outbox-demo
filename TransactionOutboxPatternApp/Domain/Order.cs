@@ -1,6 +1,6 @@
-using TransactionalOutboxPatternApp.Infrastructure;
+using TransactionOutboxPatternApp.Infrastructure;
 
-namespace TransactionalOutboxPatternApp.Domain;
+namespace TransactionOutboxPatternApp.Domain;
 
 public class Order : AggregateRoot
 {

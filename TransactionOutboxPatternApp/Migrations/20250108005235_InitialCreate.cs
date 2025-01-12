@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace TransactionalOutboxPatternApp.Migrations
+namespace TransactionOutboxPatternApp.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

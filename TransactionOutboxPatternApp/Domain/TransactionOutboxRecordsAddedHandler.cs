@@ -1,9 +1,9 @@
 using System.Text.Json;
 using BP.AWS.Messaging;
 using Microsoft.EntityFrameworkCore;
-using TransactionalOutboxPatternApp.Infrastructure;
+using TransactionOutboxPatternApp.Infrastructure;
 
-namespace TransactionalOutboxPatternApp.Domain;
+namespace TransactionOutboxPatternApp.Domain;
 
 public class TransactionOutboxRecordsAddedHandler(
     ILogger<TransactionOutboxRecordsAddedHandler> log,
@@ -41,7 +41,11 @@ public class TransactionOutboxRecordsAddedHandler(
 
             try
             {
-                await messageBus.PublishAsync("TODO", record.ToObject(), ct);
+                await messageBus.PublishAsync("TxOutbox", new MessageEnvelope
+                {
+                    Type = record.EventType,
+                    Payload = JsonSerializer.Deserialize<JsonElement>(record.JsonContent),
+                }, ct);
             }
             catch (Exception e)
             {

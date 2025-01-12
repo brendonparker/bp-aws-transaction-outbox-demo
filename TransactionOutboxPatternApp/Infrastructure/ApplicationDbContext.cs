@@ -3,9 +3,9 @@ using BP.AWS.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
-using TransactionalOutboxPatternApp.Domain;
+using TransactionOutboxPatternApp.Domain;
 
-namespace TransactionalOutboxPatternApp.Infrastructure;
+namespace TransactionOutboxPatternApp.Infrastructure;
 
 public class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> dbContextOptions,
@@ -79,7 +79,7 @@ public class ApplicationDbContext(
                     Id = 0,
                     EntityType = entry.Entity.GetType().FullName!,
                     EntityId = entry.Entity.Id,
-                    EventType = evnt.GetType().FullName!,
+                    EventType = evnt.GetType().Name,
                     JsonContent = JsonSerializer.Serialize(evnt, evnt.GetType()),
                     CreatedAt = DateTime.UtcNow
                 })
@@ -92,7 +92,10 @@ public class ApplicationDbContext(
 
             try
             {
-                await messageBus.PublishAsync("TransactionOutbox", new TransactionOutboxRecordsAdded(), cancellationToken);
+                await messageBus.PublishAsync(
+                    messageGroupId: "TransactionOutbox",
+                    MessageEnvelope.Create(new TransactionOutboxRecordsAdded()),
+                    cancellationToken);
             }
             catch (Exception e)
             {

@@ -1,4 +1,4 @@
-namespace TransactionalOutboxPatternApp;
+namespace TransactionOutboxPatternApp;
 
 public class ErrorResponse
 {

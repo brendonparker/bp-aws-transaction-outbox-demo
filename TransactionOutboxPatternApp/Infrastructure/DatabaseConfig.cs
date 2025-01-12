@@ -1,7 +1,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace TransactionalOutboxPatternApp.Infrastructure;
+namespace TransactionOutboxPatternApp.Infrastructure;
 
 public class DatabaseConfig
 {

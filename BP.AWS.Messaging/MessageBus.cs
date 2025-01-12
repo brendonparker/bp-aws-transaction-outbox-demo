@@ -1,20 +1,34 @@
+using System.Text.Json;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BP.AWS.Messaging;
 
-internal class MessageBus(IAmazonSQS sqs, IOptions<MessageBusOptions> opts) : IMessageBus
+internal class MessageBus(
+    ILogger<MessageBus> log,
+    IAmazonSQS sqs,
+    IOptions<MessageBusOptions> opts) : IMessageBus
 {
-    public async Task PublishAsync<TMessage>(string messageGroupId, TMessage message, CancellationToken ct = default)
+    public async Task PublishAsync(
+        string messageGroupId,
+        MessageEnvelope message,
+        CancellationToken ct = default)
     {
-        var queueUrl = opts.Value.GetQueueUrl<TMessage>();
+        var queueUrl = opts.Value.GetQueueUrl(message.Type);
+
+        if (queueUrl == null)
+        {
+            log.LogWarning("No queue url setup for message type: {EventType}. Not publishing anything.", message.Type);
+            return;
+        }
 
         await sqs.SendMessageAsync(new SendMessageRequest
         {
             QueueUrl = queueUrl,
             MessageGroupId = messageGroupId,
-            MessageBody = MessageEnvelope.CreateJson(message),
+            MessageBody = JsonSerializer.Serialize(message),
         }, ct);
     }
 }

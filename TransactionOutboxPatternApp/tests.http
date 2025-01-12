@@ -1,0 +1,11 @@
+### Create Order
+POST {{host}}/order
+
+### Get Transaction Outbox Records
+GET {{host}}/tx_outbox
+
+### Get Order
+GET {{host}}/order/1
+
+### Submit Order
+POST {{host}}/order/1/submit

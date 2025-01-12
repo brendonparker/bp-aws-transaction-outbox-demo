@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using TransactionalOutboxPatternApp.Infrastructure;
+using TransactionOutboxPatternApp.Infrastructure;
 
 #nullable disable
 
-namespace TransactionalOutboxPatternApp.Migrations
+namespace TransactionOutboxPatternApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20250108005235_InitialCreate")]
@@ -25,7 +25,7 @@ namespace TransactionalOutboxPatternApp.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TransactionalOutboxPatternApp.Domain.Order", b =>
+            modelBuilder.Entity("TransactionOutboxPatternApp.Domain.Order", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,7 +45,7 @@ namespace TransactionalOutboxPatternApp.Migrations
                     b.ToTable("order", (string)null);
                 });
 
-            modelBuilder.Entity("TransactionalOutboxPatternApp.Infrastructure.TransactionOutbox", b =>
+            modelBuilder.Entity("TransactionOutboxPatternApp.Infrastructure.TransactionOutbox", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()

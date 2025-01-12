@@ -1,4 +1,4 @@
-namespace TransactionalOutboxPatternApp.Domain;
+namespace TransactionOutboxPatternApp.Domain;
 
 public class OrderStatusChanged : IIntegrationEvent
 {

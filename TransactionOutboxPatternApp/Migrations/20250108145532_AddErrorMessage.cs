@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace TransactionalOutboxPatternApp.Migrations
+namespace TransactionOutboxPatternApp.Migrations
 {
     /// <inheritdoc />
     public partial class AddErrorMessage : Migration

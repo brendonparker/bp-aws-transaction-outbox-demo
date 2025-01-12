@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TransactionalOutboxPatternApp;
-using TransactionalOutboxPatternApp.Domain;
-using TransactionalOutboxPatternApp.Infrastructure;
+using TransactionOutboxPatternApp;
+using TransactionOutboxPatternApp.Domain;
+using TransactionOutboxPatternApp.Infrastructure;
 using OrderOrNotFound =
     System.Threading.Tasks.Task<Microsoft.AspNetCore.Http.HttpResults.Results<
-        Microsoft.AspNetCore.Http.HttpResults.Ok<TransactionalOutboxPatternApp.Domain.Order>,
-        Microsoft.AspNetCore.Http.HttpResults.BadRequest<TransactionalOutboxPatternApp.ErrorResponse>,
+        Microsoft.AspNetCore.Http.HttpResults.Ok<TransactionOutboxPatternApp.Domain.Order>,
+        Microsoft.AspNetCore.Http.HttpResults.BadRequest<TransactionOutboxPatternApp.ErrorResponse>,
         Microsoft.AspNetCore.Http.HttpResults.NotFound>>;
 
 var builder = WebApplication.CreateBuilder(args);

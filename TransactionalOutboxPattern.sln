@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionalOutboxPatternApp", "TransactionalOutboxPatternApp\TransactionalOutboxPatternApp.csproj", "{0B93DFB8-A0BA-4217-BF5A-591C7D28721D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionOutboxPatternApp", "TransactionOutboxPatternApp\TransactionOutboxPatternApp.csproj", "{0B93DFB8-A0BA-4217-BF5A-591C7D28721D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.AWS.Messaging", "BP.AWS.Messaging\BP.AWS.Messaging.csproj", "{F5A3214E-FEDE-40C4-9038-3CECC665FA89}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{42456E7E-BC73-45B6-BE43-67816C70774B}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

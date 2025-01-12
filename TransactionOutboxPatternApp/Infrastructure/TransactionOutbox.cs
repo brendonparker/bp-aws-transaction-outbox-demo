@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace TransactionalOutboxPatternApp.Infrastructure;
+namespace TransactionOutboxPatternApp.Infrastructure;
 
 public class TransactionOutbox
 {

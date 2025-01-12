@@ -5,7 +5,7 @@ using BP.AWS.Messaging;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
-namespace TransactionalOutboxPatternApp;
+namespace TransactionOutboxPatternApp;
 
 public class QueueLambda
 {
