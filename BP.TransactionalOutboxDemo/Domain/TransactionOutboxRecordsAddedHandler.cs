@@ -42,10 +42,11 @@ public class TransactionOutboxRecordsAddedHandler(
 
             try
             {
-                await messageBus.PublishAsync("TxOutbox", new MessageEnvelope
+                await messageBus.PublishAsync(new MessageEnvelope
                 {
                     Type = record.EventType,
                     Payload = JsonSerializer.Deserialize<JsonElement>(record.JsonContent),
+                    MessageGroupId = record.MessageGroupId ?? MessageEnvelope.DefaultMessageGroupId
                 }, ct);
             }
             catch (Exception e)

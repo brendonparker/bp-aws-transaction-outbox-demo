@@ -94,8 +94,7 @@ public class ApplicationDbContext(
             try
             {
                 await messageBus.PublishAsync(
-                    messageGroupId: "TransactionOutbox",
-                    MessageEnvelope.Create(new TransactionOutboxRecordsAdded()),
+                    MessageEnvelope.Create(new TransactionOutboxRecordsAdded(), messageGroupId: "System::TxOutbox"),
                     cancellationToken);
             }
             catch (Exception e)

@@ -27,4 +27,9 @@
     <ItemGroup>
       <ProjectReference Include="..\BP.Messaging.AWS\BP.Messaging.AWS.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Infrastructure\ApplicationDbContextFactory.cs">
+        <DependentUpon>ApplicationDbContext.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
 </Project>
