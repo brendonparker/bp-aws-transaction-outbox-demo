@@ -7,11 +7,13 @@ public class Order : AggregateRoot
         Order order = new()
         {
             Id = 0,
-            Status = OrderStatus.Created
+            Status = OrderStatus.Created,
         };
         order.AddIntegrationEvent(new OrderStatusChanged(order));
         return order;
     }
+
+    public string CustomerId { get; set; } = "Acme";
 
     public required string Status { get; set; }
 

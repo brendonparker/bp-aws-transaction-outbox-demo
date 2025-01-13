@@ -1,4 +1,6 @@
 using BP.TransactionalOutboxDemo;
+using BP.TransactionalOutboxDemo.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddApplication();

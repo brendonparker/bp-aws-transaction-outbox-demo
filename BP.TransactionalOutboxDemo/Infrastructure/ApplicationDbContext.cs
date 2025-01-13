@@ -81,6 +81,7 @@ public class ApplicationDbContext(
                     EntityType = entry.Entity.GetType().FullName!,
                     EntityId = entry.Entity.Id,
                     EventType = evnt.GetType().Name,
+                    MessageGroupId = evnt is IMessageGroupId o ? o.MessageGroupId : null,
                     JsonContent = JsonSerializer.Serialize(evnt, evnt.GetType()),
                     CreatedAt = DateTime.UtcNow
                 })
