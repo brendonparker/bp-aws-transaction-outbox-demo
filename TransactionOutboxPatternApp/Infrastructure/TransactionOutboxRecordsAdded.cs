@@ -1,3 +1,0 @@
-namespace TransactionOutboxPatternApp.Infrastructure;
-
-public class TransactionOutboxRecordsAdded;

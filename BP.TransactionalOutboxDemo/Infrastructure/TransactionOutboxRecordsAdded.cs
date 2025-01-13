@@ -1,0 +1,3 @@
+namespace BP.TransactionalOutboxDemo.Infrastructure;
+
+public class TransactionOutboxRecordsAdded;
