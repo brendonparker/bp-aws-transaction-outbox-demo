@@ -13,11 +13,12 @@ internal class MessageBus(
     IOptions<MessageBusOptions> opts) : IMessageBus
 {
     public async Task PublishAsync(
-        string messageGroupId,
         MessageEnvelope message,
         CancellationToken ct = default)
     {
         var queueUrl = opts.Value.GetQueueUrl(message.Type);
+
+        // TODO: Maybe look at "queueUrl" to determine if it should go to SNS or SQS (for fan-out use cases).
 
         if (queueUrl == null)
         {
@@ -28,7 +29,7 @@ internal class MessageBus(
         await sqs.SendMessageAsync(new SendMessageRequest
         {
             QueueUrl = queueUrl,
-            MessageGroupId = messageGroupId,
+            MessageGroupId = queueUrl.EndsWith(".fifo") ? message.MessageGroupId : null,
             MessageBody = JsonSerializer.Serialize(message),
         }, ct);
     }
